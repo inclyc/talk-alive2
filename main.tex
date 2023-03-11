@@ -5,11 +5,129 @@
 \usepackage{float}
 \usetheme{Madrid}
 
+\title{\texttt{alive2}: Bounded Translation Validation for LLVM\cite{lopes2021alive2}}
+\subtitle{Verifying Optimizations}
+\author{龙英池}
+\institute{HIT}
+
+\newcommand{\variable}[1]{\mathtt{#1}}
+
 \input{color_style.tex}
 \input{lst_style.tex}
 \input{section_pages.tex}
 
 \begin{document}
 \maketitle
+\begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents
+\end{frame}
+
+\section{Introduction}
+\begin{frame}
+    \frametitle{IR $\rightarrow$ IR Transformation Validation}
+    \begin{itemize}
+        \item IR transformation is complex!
+        \item Causes serious bugs for miscompilation
+        \item Big \texttt{LangRef.rst} but not detailed specified
+    \end{itemize}
+
+    \vspace{2em}
+
+    Requires:
+
+    \begin{enumerate}
+        \item Formally defined IR sematics
+        \item Validation tool
+    \end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Example - \texttt{InstCombine}}
+
+    % TODO: InstCombine
+
+\end{frame}
+
+
+\section{Challenge - Undefined Behavior: \texttt{undef} \& \texttt{poison}}
+
+
+\begin{frame}
+    \frametitle{Challenge: Undefined Behavior \texttt{undef} \& \texttt{poison} ~\cite{lee_2020}}
+    \begin{itemize}
+        \item \texttt{undef}: SSA construction, padding, $\dots$
+        \item \texttt{poison}: algebraic simplifications
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Example}
+    \noindent
+    \begin{minipage}[t]{0.5\linewidth}
+        \lstinputlisting[language=LLVM]{assets/example.ll}
+    \end{minipage}
+    \hfill%
+    \begin{minipage}[t]{0.4\linewidth}
+        \begin{itemize}
+            \item  \texttt{\%a} $\rightarrow$ $2^{2^{32}}$ possible values!
+            \item  \texttt{\%c} is not posion because \texttt{br} on posion is UB.
+        \end{itemize}
+    \end{minipage}
+\end{frame}
+
+
+
+\section{Encoding IR Sematics}
+
+\begin{frame}
+    \frametitle{IR Sematics in SMT}
+
+    \begin{table}
+        \centering
+        \caption{IR Sematics}
+        \begin{tabular}{ccc}
+            \toprule
+            \textbf{IR Element}    & \textbf{Encoding}                                                                          \\
+            \midrule
+            Register File          & $(\variable{value}, \variable{ispoison})$                                                  \\
+            Function Arguments     & $\variable{value} \leftarrow \mathtt{ite(isundef, undef, value)}$                          \\
+            Control Flow           & Merge $\phi$ nodes                                                                         \\
+            Floating-Point Numbers & IEEE-754 $\rightarrow$ SMT FPA\footnote{\texttt{bitcast} do not preserve NaN bit patterns} \\
+            Returned Value         & Value $\cup$ \texttt{no-return}                                                            \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Special intrinsics}
+    \begin{center}
+        \texttt{printf} $\rightarrow$ \texttt{puts}
+    \end{center}
+
+    \begin{itemize}
+        \pause
+        \item Special sematics for library intrinsics
+              \pause
+        \item Tag unsupported feature as "over-approximation" (do not report)
+    \end{itemize}
+
+\end{frame}
+
+
+\section{Encoding Memory Accesses}
+
+\section{References}
+
+
+\begin{frame}[allowframebreaks]
+    \frametitle{References}
+    \bibliographystyle{ieeetr}
+    \bibliography{main.bib}
+\end{frame}
 \end{document}
 
