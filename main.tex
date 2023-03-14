@@ -132,6 +132,44 @@
 
 \section{Encoding Memory Accesses}
 
+\begin{frame}
+    \frametitle{Memory Accesses}
+
+    \begin{table}
+        \centering
+        \caption{IR Sematics}
+        \begin{tabular}{cc}
+            \toprule
+            \textbf{Memory Model}     & \textbf{Encoding}                \\
+            \midrule
+            Memory blocks             & statically compute, other types  \\
+            Pointers                  & (bid, off)                       \\
+            Block attributes \& bytes & RO properties \& SMT array       \\
+            Memory accesses           & \texttt{poison} \& \texttt{free} \\
+
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+\end{frame}
+
+\section{Verifying Correctness}
+
+\begin{frame}
+    \frametitle{Verifying Correctness}
+
+    For any fixed input, must produces the same output, (can be more defined.)
+
+    \begin{enumerate}
+        \item \texttt{posion} $\rightarrow$ any value
+        \item \texttt{undef} $\rightarrow$ must be \textbf{more} defined
+        \item \texttt{noreturn} $\rightarrow$ \texttt{noreturn}
+        \item aggregate-values: compared element-wise
+    \end{enumerate}
+
+
+\end{frame}
+
 \section{References}
 
 
